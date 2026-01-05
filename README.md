@@ -1,0 +1,1 @@
+# avrora_shcool_map
