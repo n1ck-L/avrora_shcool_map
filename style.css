@@ -40,7 +40,7 @@ header p { color: #7f8c8d; font-size: 1.1em; }
     overflow: hidden;
     box-shadow: 0 6px 18px rgba(0,0,0,0.1);
     height: 70vh; /* Карта занимает 70% высоты окна */
-    min-height: 600px;
+    min-height: 570px;
 }
 
 #map {
@@ -53,11 +53,10 @@ header p { color: #7f8c8d; font-size: 1.1em; }
 .map-overlay {
     position: absolute;
     top: 20px;
-    left: 20px;
     right: 20px;
     z-index: 1000;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     pointer-events: none; /* Чтобы не мешали карте */
 }
 
@@ -89,17 +88,13 @@ header p { color: #7f8c8d; font-size: 1.1em; }
 }
 #searchBtn:hover { background: #2980b9; }
 
-.map-stats {
-    background: rgba(255, 255, 255, 0.95);
-    padding: 10px 20px;
-    border-radius: 50px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    font-weight: 600;
-    color: #2c3e50;
-}
-
 /* Боковая панель */
-.sidebar { display: flex; flex-direction: column; gap: 20px; }
+.sidebar { 
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    justify-content: space-between;
+}
 
 /* Карточки в боковой панели */
 .stats-card, .action-card, .filters-card, .list-card {
@@ -107,6 +102,10 @@ header p { color: #7f8c8d; font-size: 1.1em; }
     padding: 22px;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.action-card {
+    margin-bottom: 30px;
 }
 
 h3 {
@@ -146,7 +145,7 @@ h3 i { color: #3498db; }
     transition: all 0.3s ease;
 }
 .action-button {
-    background: linear-gradient(135deg, #4285f4, #34a853);
+    background: #3498db;
     color: white;
     font-weight: 600;
 }

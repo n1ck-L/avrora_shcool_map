@@ -26,7 +26,13 @@ function initMap() {
         center: MAP_CONFIG.center,
         zoom: MAP_CONFIG.zoom,
         minZoom: MAP_CONFIG.minZoom,
-        maxZoom: MAP_CONFIG.maxZoom
+        maxZoom: MAP_CONFIG.maxZoom,
+        worldCopyJump: false, // Важно! Отключаем "прыжки" между копиями мира
+        maxBounds: [           // Ограничиваем область карты
+            [-85, -180],      // Юго-западный угол (нижняя граница)
+            [85, 180]         // Северо-восточный угол (верхняя граница)
+        ],
+        maxBoundsViscosity: 1.0 // Насколько "липкими" будут границы (1.0 = очень липкие)
     });
 
     // Добавляем слой карты OpenStreetMap (бесплатный)
@@ -34,6 +40,11 @@ function initMap() {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         maxZoom: MAP_CONFIG.maxZoom
     }).addTo(map);
+
+    // Дополнительно: ставим обработчик на попытку выйти за границы
+    map.on('drag', function() {
+        map.panInsideBounds([[-85, -180], [85, 180]], { animate: false });
+    });
 
     // Создаем пустой слой для маркеров
     markersLayer = L.layerGroup().addTo(map);
@@ -79,25 +90,33 @@ function loadDataFromGoogleSheets() {
                 updateLastUpdateTime();
                 updateFiltersDropdowns(allGraduates);
                 updateStatistics(allGraduates);
-                updateGraduatesList(allGraduates.slice(0, 10));
                 displayGraduatesOnMap(allGraduates);
-                document.getElementById('statsText').textContent = 
-                    `Показано: ${allGraduates.length} выпускников`;
             } else {
-                document.getElementById('statsText').textContent = 'Нет данных с координатами';
                 console.log('Все строки:', results.data);
             }
         },
         
         error: function(error) {
             console.error('Ошибка CSV:', error);
-            document.getElementById('statsText').textContent = 'Ошибка загрузки';
         }
     });
 }
 
 // ОТОБРАЖЕНИЕ ВЫПУСКНИКОВ НА КАРТЕ
 // ================================
+function getInitials(fullName) {
+    if (!fullName) return '??';
+    
+    // Берем первые буквы первых двух слов (Фамилия Имя)
+    const parts = fullName.split(' ').filter(p => p.trim() !== '');
+    if (parts.length >= 2) {
+        return (parts[0][0] + parts[1][0]).toUpperCase();
+    } else if (parts.length === 1) {
+        return parts[0].substring(0, 2).toUpperCase();
+    }
+    return '??';
+}
+
 function displayGraduatesOnMap(graduates) {
     // 1. Очищаем старые маркеры
     markersLayer.clearLayers();
@@ -134,7 +153,7 @@ function displayGraduatesOnMap(graduates) {
                     font-size: 13px;
                     cursor: pointer;
                 ">
-                    ${String(grad.graduation_year).slice(-2)}
+                    ${getInitials(grad.full_name)}
                 </div>
             `,
             iconSize: [34, 34],
@@ -247,52 +266,6 @@ function updateStatistics(graduates) {
     }
 }
 
-function updateGraduatesList(graduates) {
-    const listContainer = document.getElementById('graduatesList');
-    
-    if (graduates.length === 0) {
-        listContainer.innerHTML = '<p style="color:#95a5a6; text-align:center;">Нет данных для отображения</p>';
-        return;
-    }
-    
-    const listItems = graduates.slice(0, 15).map(grad => `
-        <div class="graduate-item" data-name="${grad.full_name}">
-            <h4>${grad.full_name}</h4>
-            <p><i class="fas fa-graduation-cap"></i> Выпуск ${grad.graduation_year}</p>
-            <p><i class="fas fa-map-marker-alt"></i> ${grad.city}, ${grad.country}</p>
-            ${grad.profession ? `<p><i class="fas fa-briefcase"></i> ${grad.profession}</p>` : ''}
-        </div>
-    `).join('');
-    
-    listContainer.innerHTML = listItems;
-    
-    // Добавляем обработчики кликов на элементы списка
-    document.querySelectorAll('.graduate-item').forEach(item => {
-        item.addEventListener('click', function() {
-            const gradName = this.getAttribute('data-name');
-            const graduate = allGraduates.find(g => g.full_name === gradName);
-            if (graduate) {
-                // Центрируем карту на выпускнике и открываем попап
-                map.setView([graduate.latitude, graduate.longitude], 12);
-                highlightGraduateInList(gradName);
-                
-                // Находим маркер и открываем его попап
-                markersLayer.eachLayer(layerGroup => {
-                    if (layerGroup.eachLayer) {
-                        layerGroup.eachLayer(marker => {
-                            const latLng = marker.getLatLng();
-                            if (latLng.lat === graduate.latitude && 
-                                latLng.lng === graduate.longitude) {
-                                marker.openPopup();
-                            }
-                        });
-                    }
-                });
-            }
-        });
-    });
-}
-
 function updateFiltersDropdowns(graduates) {
     const yearFilter = document.getElementById('yearFilter');
     const countryFilter = document.getElementById('countryFilter');
@@ -349,14 +322,7 @@ function performSearch() {
     
     // Обновляем отображение
     displayGraduatesOnMap(filteredGraduates);
-    updateGraduatesList(filteredGraduates);
     updateStatistics(filteredGraduates);
-    
-    // Обновляем статус
-    const statsText = filteredGraduates.length === allGraduates.length 
-        ? `Показано: ${filteredGraduates.length} выпускников`
-        : `Показано: ${filteredGraduates.length} из ${allGraduates.length}`;
-    document.getElementById('statsText').textContent = statsText;
 }
 
 function highlightGraduateInList(name) {
