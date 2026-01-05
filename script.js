@@ -2,7 +2,7 @@
 // КОНФИГУРАЦИЯ
 // ===============
 // ВАЖНО: Вставьте сюда вашу ссылку на опубликованную Google Таблицу в формате CSV!
-const GOOGLE_SHEETS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTLW2kvPGc83XLEV3qANk88LnS_NIOrVUnimDD0SyVpCcc3lI8xS4EXQRuMZ_2HpNpbZjgXI2sSGqa4/pubhtml';
+const GOOGLE_SHEETS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTLW2kvPGc83XLEV3qANk88LnS_NIOrVUnimDD0SyVpCcc3lI8xS4EXQRuMZ_2HpNpbZjgXI2sSGqa4/pub?output=csv';
 
 // Центр и зум карты по умолчанию
 const MAP_CONFIG = {
