@@ -213,16 +213,7 @@ function createPopupContent(graduate) {
             </div>
             <div class="popup-body">
                 <p><i class="fas fa-map-marker-alt"></i> ${graduate.city}, ${graduate.country}</p>
-                ${graduate.profession ? `<p><i class="fas fa-briefcase"></i> ${graduate.profession}</p>` : ''}
-                ${graduate.telegram || graduate.email ? 
-                    `<p><i class="fas fa-envelope"></i> ${graduate.telegram || graduate.email}</p>` : ''}
-                ${graduate.photo_url ? `
-                    <div style="margin-top: 10px;">
-                        <img src="${graduate.photo_url}" 
-                             alt="${graduate.full_name}" 
-                             style="width:100%; border-radius: 6px; margin-top: 8px;">
-                    </div>` : ''}
-                ${graduate.comment ? `<p style="margin-top: 10px; font-style: italic;">"${graduate.comment}"</p>` : ''}
+                ${graduate.profession !== '' ? `<p><i class="fas fa-briefcase"></i> ${graduate.profession}</p>` : ''}
             </div>
         </div>
     `;
