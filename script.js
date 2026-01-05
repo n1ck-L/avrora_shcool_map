@@ -203,8 +203,8 @@ function createPopupContent(graduate) {
         <div class="leaflet-popup-content">
             <div class="popup-header">
                 ${graduate.prev_last_name !== '' ? 
-                    `<h4> ${graduate.full_name} (бывш. ${graduate.prev_last_name} )</h4>` : 
-                    `<h4>graduate.full_name</h4>`
+                    `<h4>${graduate.full_name} (бывш. ${graduate.prev_last_name})</h4>` : 
+                    `<h4>${graduate.full_name}</h4>`
                 }
                 <p style="color:#7f8c8d; margin-bottom: 8px;">
                     <i class="fas fa-graduation-cap"></i> Выпуск ${graduate.graduation_year}
