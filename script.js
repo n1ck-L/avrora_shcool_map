@@ -48,13 +48,11 @@ function initMap() {
 
     // Создаем пустой слой для маркеров
     markersLayer = L.layerGroup().addTo(map);
-    console.log('Карта инициализирована');
 }
 
 // ЗАГРУЗКА ДАННЫХ ИЗ GOOGLE SHEETS
 // ==================================
 function loadDataFromGoogleSheets() {
-    console.log('Начинаю загрузку данных...');
     
     Papa.parse(GOOGLE_SHEETS_CSV_URL, {
         download: true,
@@ -62,8 +60,6 @@ function loadDataFromGoogleSheets() {
         skipEmptyLines: true,
         
         complete: function(results) {
-            console.log('CSV загружен. Колонки:', Object.keys(results.data[0] || {}));
-            
             // Преобразуем русские названия в английские
             allGraduates = results.data.map(row => {
 
@@ -79,29 +75,20 @@ function loadDataFromGoogleSheets() {
                     profession: row['Профессия или должность'] || '',
                     timestamp: row['Отметка времени']
                 };
-                
-                console.log('Обработан:', graduate.full_name, graduate.prev_last_name, graduate.latitude, graduate.longitude, graduate.profession);
                 return graduate;
             }).filter(g => 
                 g.latitude && g.longitude && g.full_name && 
                 !isNaN(g.latitude) && !isNaN(g.longitude)
             );
             
-            console.log('После фильтрации осталось:', allGraduates.length);
             
             if (allGraduates.length > 0) {
                 updateLastUpdateTime();
                 updateFiltersDropdowns(allGraduates);
                 updateStatistics(allGraduates);
                 displayGraduatesOnMap(allGraduates);
-            } else {
-                console.log('Все строки:', results.data);
             }
         },
-        
-        error: function(error) {
-            console.error('Ошибка CSV:', error);
-        }
     });
 }
 
@@ -334,7 +321,6 @@ function highlightGraduateInList(name) {
 // ИНИЦИАЛИЗАЦИЯ И ЗАПУСК
 // ======================
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM загружен, инициализирую приложение...');
     
     // 1. Инициализируем карту
     initMap();
@@ -360,6 +346,4 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 4. Автообновление данных каждую минуту
     setInterval(loadDataFromGoogleSheets, 1 * 60 * 1000);
-    
-    console.log('Приложение инициализировано, ожидаю данные...');
 });
