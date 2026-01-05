@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Карта выпускников школы</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="style.css">
+    <!-- Иконки (Font Awesome) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-map-marked-alt"></i> Карта выпускников</h1>
+            <p>Где живут и работают наши выпускники</p>
+        </header>
+
+        <div class="main-layout">
+            <div class="map-container">
+                <!-- Контейнер для карты -->
+                <div id="map"></div>
+                <!-- Элементы управления поверх карты -->
+                <div class="map-overlay">
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Найти по имени или городу...">
+                        <button id="searchBtn"><i class="fas fa-search"></i></button>
+                    </div>
+                    <div class="map-stats">
+                        <span id="statsText">Загрузка...</span>
+                    </div>
+                </div>
+            </div>
+
+            <aside class="sidebar">
+                <div class="stats-card">
+                    <h3><i class="fas fa-chart-line"></i> Статистика</h3>
+                    <div id="statsContainer">
+                        <p><i class="fas fa-user-graduate"></i> Выпускников: <strong id="totalCount">0</strong></p>
+                        <p><i class="fas fa-globe-americas"></i> Стран: <strong id="countryCount">0</strong></p>
+                        <p><i class="fas fa-calendar-alt"></i> Годы: <strong id="yearRange">-</strong></p>
+                    </div>
+                </div>
+
+                <div class="action-card">
+                    <h3><i class="fas fa-plus-circle"></i> Добавить себя</h3>
+                    <p>Заполните форму, чтобы появиться на карте!</p>
+                    <!-- ВСТАВЬТЕ СЮДА ССЫЛКУ НА ВАШУ GOOGLE ФОРМУ -->
+                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSdrPlo-QVwGvjdCSbCS4sSxNxigzHdKhHi_RkO78_eHnq6Q_w/viewform?usp=dialog" 
+                       class="action-button" 
+                       target="_blank">
+                       <i class="fab fa-google"></i> Открыть форму
+                    </a>
+                </div>
+
+                <div class="filters-card">
+                    <h3><i class="fas fa-filter"></i> Фильтры</h3>
+                    <label for="yearFilter">Год выпуска:</label>
+                    <select id="yearFilter">
+                        <option value="all">Все годы</option>
+                    </select>
+                    <label for="countryFilter">Страна:</label>
+                    <select id="countryFilter">
+                        <option value="all">Все страны</option>
+                    </select>
+                    <button id="resetFilters" class="secondary-button">
+                        <i class="fas fa-redo"></i> Сбросить
+                    </button>
+                </div>
+
+                <div class="list-card">
+                    <h3><i class="fas fa-list"></i> Недавно добавленные</h3>
+                    <div id="graduatesList"></div>
+                </div>
+            </aside>
+        </div>
+
+        <footer>
+            <p>Карта обновляется автоматически. Данные из Google Таблицы.</p>
+            <p class="update-info">Последнее обновление: <span id="lastUpdate">-</span></p>
+        </footer>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Papa Parse для чтения CSV -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <!-- Наш основной скрипт -->
+    <script src="script.js"></script>
+</body>
+</html>
