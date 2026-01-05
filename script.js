@@ -32,7 +32,7 @@ function initMap() {
             [-85, -180],      // Юго-западный угол (нижняя граница)
             [85, 180]         // Северо-восточный угол (верхняя граница)
         ],
-        maxBoundsViscosity: 1.0 // Насколько "липкими" будут границы (1.0 = очень липкие)
+        maxBoundsViscosity: 1.0
     });
 
     // Добавляем слой карты OpenStreetMap (бесплатный)
@@ -76,6 +76,7 @@ function loadDataFromGoogleSheets() {
                     country: row['Страна проживания'],
                     latitude: parseFloat(row.Широта),
                     longitude: parseFloat(row.Долгота),
+                    profession: row.Профессия,
                     timestamp: row['Отметка времени']
                 };
                 
@@ -366,8 +367,8 @@ document.addEventListener('DOMContentLoaded', function() {
         performSearch();
     });
     
-    // 4. Автообновление данных каждые 5 минут
-    setInterval(loadDataFromGoogleSheets, 5 * 60 * 1000);
+    // 4. Автообновление данных каждую минуту
+    setInterval(loadDataFromGoogleSheets, 1 * 60 * 1000);
     
     console.log('Приложение инициализировано, ожидаю данные...');
 });
