@@ -45,43 +45,53 @@ function initMap() {
 function loadDataFromGoogleSheets() {
     console.log('Начинаю загрузку данных...');
     
-    // Используем PapaParse для чтения CSV по ссылке
     Papa.parse(GOOGLE_SHEETS_CSV_URL, {
         download: true,
-        header: true,            // Первая строка - заголовки столбцов
-        dynamicTyping: true,     // Автоматическое определение типов данных
+        header: true,
         skipEmptyLines: true,
-        encoding: 'UTF-8',
         
-        // Успешная загрузка
         complete: function(results) {
-            console.log('Данные успешно загружены! Найдено строк:', results.data.length);
+            console.log('CSV загружен. Колонки:', Object.keys(results.data[0] || {}));
             
-            // Фильтруем строки, где есть координаты
-            allGraduates = results.data.filter(row => 
-                row.latitude && row.longitude && row.full_name
+            // Преобразуем русские названия в английские
+            allGraduates = results.data.map(row => {
+                // Создаем стандартизированный объект
+                const graduate = {
+                    full_name: `${row.Фамилия || ''} ${row.Имя || ''} ${row.Отчество || ''}`.trim(),
+                    graduation_year: row['Год выпуска'] || row['Год выпуска'],
+                    city: row['Город проживания'] || row['Город проживания'],
+                    country: row['Страна проживания'] || row['Страна проживания'],
+                    latitude: parseFloat(row.Широта || row.Широта),
+                    longitude: parseFloat(row.Долгота || row.Долгота),
+                    timestamp: row['Отметка времени'] || row.timestamp
+                };
+                
+                console.log('Обработан:', graduate.full_name, graduate.latitude, graduate.longitude);
+                return graduate;
+            }).filter(g => 
+                g.latitude && g.longitude && g.full_name && 
+                !isNaN(g.latitude) && !isNaN(g.longitude)
             );
             
-            // Обновляем интерфейс
-            updateLastUpdateTime();
-            updateFiltersDropdowns(allGraduates);
-            updateStatistics(allGraduates);
-            updateGraduatesList(allGraduates.slice(0, 10)); // Показываем 10 последних
+            console.log('После фильтрации осталось:', allGraduates.length);
             
-            // Отображаем на карте
-            displayGraduatesOnMap(allGraduates);
-            
-            // Обновляем статус
-            document.getElementById('statsText').textContent = 
-                `Показано: ${allGraduates.length} выпускников`;
+            if (allGraduates.length > 0) {
+                updateLastUpdateTime();
+                updateFiltersDropdowns(allGraduates);
+                updateStatistics(allGraduates);
+                updateGraduatesList(allGraduates.slice(0, 10));
+                displayGraduatesOnMap(allGraduates);
+                document.getElementById('statsText').textContent = 
+                    `Показано: ${allGraduates.length} выпускников`;
+            } else {
+                document.getElementById('statsText').textContent = 'Нет данных с координатами';
+                console.log('Все строки:', results.data);
+            }
         },
         
-        // Обработка ошибок
         error: function(error) {
-            console.error('Ошибка при загрузке данных:', error);
-            document.getElementById('statsText').textContent = 'Ошибка загрузки данных';
-            document.getElementById('graduatesList').innerHTML = 
-                '<p style="color: #e74c3c; text-align: center;">Не удалось загрузить данные.</p>';
+            console.error('Ошибка CSV:', error);
+            document.getElementById('statsText').textContent = 'Ошибка загрузки';
         }
     });
 }
