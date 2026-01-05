@@ -66,18 +66,20 @@ function loadDataFromGoogleSheets() {
             
             // Преобразуем русские названия в английские
             allGraduates = results.data.map(row => {
+
                 // Создаем стандартизированный объект
                 const graduate = {
-                    full_name: `${row.Фамилия || ''} ${row.Имя || ''} ${row.Отчество || ''}`.trim(),
-                    graduation_year: row['Год выпуска'] || row['Год выпуска'],
-                    city: row['Город проживания'] || row['Город проживания'],
-                    country: row['Страна проживания'] || row['Страна проживания'],
-                    latitude: parseFloat(row.Широта || row.Широта),
-                    longitude: parseFloat(row.Долгота || row.Долгота),
-                    timestamp: row['Отметка времени'] || row.timestamp
+                    full_name: `${row['Фамилия (сейчас)']} ${row.Имя} ${row.Отчество || ''}`.trim(),
+                    prev_last_name: row['Фамилия (во время учебы)'] || '',
+                    graduation_year: row['Год выпуска'],
+                    city: row['Город проживания'],
+                    country: row['Страна проживания'],
+                    latitude: parseFloat(row.Широта),
+                    longitude: parseFloat(row.Долгота),
+                    timestamp: row['Отметка времени']
                 };
                 
-                console.log('Обработан:', graduate.full_name, graduate.latitude, graduate.longitude);
+                console.log('Обработан:', graduate.full_name, graduate.prev_last_name, graduate.latitude, graduate.longitude);
                 return graduate;
             }).filter(g => 
                 g.latitude && g.longitude && g.full_name && 
@@ -197,14 +199,13 @@ function getMarkerColorByYear(year) {
 }
 
 function createPopupContent(graduate) {
-    // Форматируем дату добавления
-    const addedDate = graduate.timestamp ? 
-        new Date(graduate.timestamp).toLocaleDateString('ru-RU') : 'Недавно';
-    
     return `
         <div class="leaflet-popup-content">
             <div class="popup-header">
-                <h4>${graduate.full_name}</h4>
+                ${graduate.prev_last_name !== '' ? 
+                    `<h4> ${graduate.full_name} (бывш. ${graduate.prev_last_name} )</h4>` : 
+                    `<h4>graduate.full_name</h4>`
+                }
                 <p style="color:#7f8c8d; margin-bottom: 8px;">
                     <i class="fas fa-graduation-cap"></i> Выпуск ${graduate.graduation_year}
                 </p>
@@ -221,9 +222,6 @@ function createPopupContent(graduate) {
                              style="width:100%; border-radius: 6px; margin-top: 8px;">
                     </div>` : ''}
                 ${graduate.comment ? `<p style="margin-top: 10px; font-style: italic;">"${graduate.comment}"</p>` : ''}
-            </div>
-            <div class="popup-footer" style="margin-top: 10px; font-size: 0.85em; color: #95a5a6;">
-                Добавлено: ${addedDate}
             </div>
         </div>
     `;
