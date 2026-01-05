@@ -80,7 +80,7 @@ function loadDataFromGoogleSheets() {
                     timestamp: row['Отметка времени']
                 };
                 
-                console.log('Обработан:', graduate.full_name, graduate.prev_last_name, graduate.latitude, graduate.longitude);
+                console.log('Обработан:', graduate.full_name, graduate.prev_last_name, graduate.latitude, graduate.longitude, graduate.profession);
                 return graduate;
             }).filter(g => 
                 g.latitude && g.longitude && g.full_name && 
