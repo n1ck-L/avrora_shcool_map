@@ -76,7 +76,7 @@ function loadDataFromGoogleSheets() {
                     country: row['Страна проживания'],
                     latitude: parseFloat(row.Широта),
                     longitude: parseFloat(row.Долгота),
-                    profession: row.Профессия || '',
+                    profession: row['Профессия'] || '',
                     timestamp: row['Отметка времени']
                 };
                 
